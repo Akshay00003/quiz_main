@@ -55,8 +55,8 @@ const Main = ({ subject, setTotalQuestions, setSelections, score }) => {
     setCurrentQuestionIndex((prevIndex) => Math.max(prevIndex - 1, 0));
   };
   const handleClearSelection = () => {
-    // // setCurrentQuestionIndex(0)
-    // setSelectedOption(null)
+    setCurrentQuestionIndex(0)
+    setSelectedOption(null)
     window.location.reload();
   };
   if (!data) {
