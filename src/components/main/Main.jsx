@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import style from "./Main.module.scss";
-import { Link,useNavigate } from "react-router-dom";
+// import { Link,useNavigate } from "react-router-dom";
 
 const Main = ({ subject, setTotalQuestions, setSelections, score }) => {
-  const navigate=useNavigate()
+  // const navigate=useNavigate()
   const [data, setData] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -55,12 +55,12 @@ const Main = ({ subject, setTotalQuestions, setSelections, score }) => {
   const handlePreviousQuestion = () => {
     setCurrentQuestionIndex((prevIndex) => Math.max(prevIndex - 1, 0));
   };
-  const handleClearSelection = () => {
-    // setCurrentQuestionIndex(0)
-    // setSelectedOption(null)
-    // window.location.reload();
-    navigate('/')
-  };
+  // const handleClearSelection = () => {
+  //   // setCurrentQuestionIndex(0)
+  //   // setSelectedOption(null)
+  //   // window.location.reload();
+  //   navigate('/')
+  // };
   if (!data) {
     return <div> Loading</div>;
   }
@@ -105,13 +105,13 @@ const Main = ({ subject, setTotalQuestions, setSelections, score }) => {
           >
             Previous
           </button>
-          <button
+          {/* <button
             onClick={handleClearSelection}
             className={style.clear}
             type="button"
           >
             Clear selection
-          </button>
+          </button> */}
           {currentQuestionIndex < totalQuestions - 1 ? (
             <button
               onClick={handleNextQuestion}
