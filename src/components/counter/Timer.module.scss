@@ -1,0 +1,12 @@
+@import '../../App.scss';
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    .content{
+        font-weight: 800;
+        font-size: 20px;
+    }
+}
