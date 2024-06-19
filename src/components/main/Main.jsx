@@ -88,7 +88,7 @@ const Main = ({ subject, setTotalQuestions, setSelections, score }) => {
                 }`}
                 onClick={() => setSelectedOption(opt.option)}
               >
-                {opt.option}:{stripHtmlTags(opt.value)},
+                {opt.option}:{stripHtmlTags(opt.value)}
                 {/* {currentQuestion.correctOptions} */}
               </div>
             ))}
