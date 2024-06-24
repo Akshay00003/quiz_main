@@ -69,9 +69,9 @@ const SideBar = () => {
             >{index+1}</div>
           ))}
         </div>
-        <Link to={`/${mark}`}>
+        <Link  onClick={()=>dispatch(setMark())} to={`/${mark}`}>
           <div className={style.finish}>
-            <button onClick={()=>dispatch(setMark())}>Finish</button>
+            <button>Finish</button>
           </div>
         </Link>
       </div>

@@ -5,7 +5,7 @@ export const quizSlice = createSlice({
   name: "quiz",
   initialState: {
     subject: 0,
-    subJectName:"SCIENCE",
+    subJectName: "SCIENCE",
     questionLength: 10,
     answers: [],
     mark: 0,
@@ -42,8 +42,11 @@ export const quizSlice = createSlice({
       state.mark = state.answers.reduce((total, answer) => {
         if (answer.selectedOption === answer.correctOption) {
           return total + 4;
-        } else {
+        }
+        if (answer.selectedOption !== answer.correctOption) {
           return total - 1;
+        } else {
+          return total;
         }
       }, 0);
       console.log("mark is", state.mark);
@@ -51,13 +54,19 @@ export const quizSlice = createSlice({
     clearSession: (state) => {
       state.answers = [];
     },
-    setSubjectName:(state,action)=>{
-      state.subJectName=action.payload
-      console.log('sub name',state.subJectName);
-    }
+    setSubjectName: (state, action) => {
+      state.subJectName = action.payload;
+      console.log("sub name", state.subJectName);
+    },
   },
 });
 
-export const { selectSubject, findQuestionLength, checkAnswer, setMark,clearSession,setSubjectName } =
-  quizSlice.actions;
+export const {
+  selectSubject,
+  findQuestionLength,
+  checkAnswer,
+  setMark,
+  clearSession,
+  setSubjectName,
+} = quizSlice.actions;
 export default quizSlice.reducer;

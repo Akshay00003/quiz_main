@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
 import style from "./Mark.module.scss";
 import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Mark = () => {
-    const {mark}=useParams()
+    // const {mark}=useParams()
+    const mark=useSelector(state=>state.quiz.mark)
   const [windowDimension, setDimension] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
