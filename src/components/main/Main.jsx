@@ -1,134 +1,131 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import style from "./Main.module.scss";
-// import { Link,useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  findQuestionLength,
+  checkAnswer,
+ 
+  clearSession,
+} from "../../features/Quiz";
+import axios from "axios";
 
-const Main = ({ subject, setTotalQuestions, setSelections, score }) => {
-  // const navigate=useNavigate()
+
+const Main = () => {
+  const subject = useSelector((state) => state.quiz.subject);
+ 
+  const dispatch = useDispatch();
   const [data, setData] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   useEffect(() => {
-    const getScienceData = async () => {
+    const getAllData = async () => {
       await axios
         .get("https://dreamthemonline.com/sample/getNewQuizData/600")
-        .then((data) => {
-          console.log(data.data);
-          setData(data.data);
+        .then((result) => {
+          console.log(result.data);
+          setData(result.data);
         });
     };
-    getScienceData();
+    getAllData();
   }, []);
+  console.log("h", subject);
   useEffect(() => {
-    if (data && data.sections[subject]) {
-      setTotalQuestions(data.sections[subject].data.length);
+    if (data) {
+      const questionLength = data.sections[subject]?.data.length || 0;
+      console.log("q length", questionLength);
+      dispatch(findQuestionLength(questionLength));
     }
-  }, [data, subject, setTotalQuestions]);
+  }, [data, subject, dispatch]);
+  useEffect(() => {
+    setCurrentQuestionIndex(0);
+    dispatch(clearSession());
+    // selectedOption(null)
+  }, [subject, dispatch]);
+  if (!data) {
+    return <div className={style.loading}> Loading...!</div>;
+  }
   const stripHtmlTags = (html) => {
     const div = document.createElement("div");
     div.innerHTML = html;
     return div.textContent || div.innerText || "";
   };
 
-  const handleNextQuestion = () => {
-    if (selectedOption !== null) {
-      setSelections((prev) => [
-        ...prev,
-        {
-          questionNumber: currentQuestionIndex + 1,
-          selectedOption,
-          correctAns,
-        },
-      ]);
-      setSelectedOption(null);
-    } else {
-      // If no option is selected, pass a false state to indicate skipping
-      setSelections((prev) => [
-        ...prev,
-        { questionNumber: currentQuestionIndex + 1, selectedOption: false },
-      ]);
-    }
-    setCurrentQuestionIndex((prevIndex) =>
-      Math.min(prevIndex + 1, data.sections[subject].data.length - 1)
+  const handleAnswerClick = (opt) => {
+    const correctOption =
+      data.sections[subject].data[currentQuestionIndex].correctOptions[0];
+    setSelectedOption(opt.option);
+    dispatch(
+      checkAnswer({
+        questionNumber: currentQuestionIndex,
+        selectedOption: opt.option,
+        correctOption: correctOption,
+      })
     );
   };
-  const handlePreviousQuestion = () => {
-    setCurrentQuestionIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  const handleNextClick = () => {
+    setCurrentQuestionIndex(currentQuestionIndex + 1);
+    setSelectedOption(null);
   };
-  // const handleClearSelection = () => {
-  //   // setCurrentQuestionIndex(0)
-  //   // setSelectedOption(null)
-  //   // window.location.reload();
-  //   navigate('/')
-  // };
-  if (!data) {
-    return <div> Loading</div>;
+  const handlePreviousQuestion=()=>{
+    setCurrentQuestionIndex(currentQuestionIndex-1)
   }
-  const currentQuestion = data.sections[subject].data[currentQuestionIndex];
-  const correctAns = currentQuestion.correctOptions;
-  console.log("correct ans ", correctAns);
-  console.log("l is", currentQuestion.length);
-  const totalQuestions = data.sections[subject].data.length;
-  if (totalQuestions) {
-    setTotalQuestions(totalQuestions);
-  }
-  console.log("total is ", totalQuestions);
+  const handleClearSession = () => {
+    setCurrentQuestionIndex(0);
+    dispatch(clearSession());
+    setSelectedOption(null);
+  };
+  const currentQuestion =
+    data.sections[subject].data[currentQuestionIndex].question;
+  const options = data.sections[subject].data[currentQuestionIndex].options;
+  // const correctOption =
+  //   data.sections[subject].data[currentQuestionIndex].correctOptions[0];
+  const sub = data.sections[subject].title;
+
+  console.log("c is ", sub);
   return (
     <div className={style.container}>
       <div className={style.box}>
-        <div key={currentQuestion.questionID} className={style.main}>
+        <div className={style.main}>
           <div className={style.qNo}>Question No{currentQuestionIndex + 1}</div>
-          <div className={style.question}>
-            {stripHtmlTags(currentQuestion.question)}
-          </div>
+
+          <div className={style.question}>{stripHtmlTags(currentQuestion)}</div>
+
           <div className={style.options}>
-            {currentQuestion.options.map((opt, i) => (
+            {options.map((opt, index) => (
               <div
-                key={i}
+                onClick={() => handleAnswerClick(opt)}
+                key={index}
                 className={`${style.option} ${
                   selectedOption === opt.option ? style.selected : ""
                 }`}
-                onClick={() => setSelectedOption(opt.option)}
               >
-                {opt.option}:{stripHtmlTags(opt.value)}
-                {/* {currentQuestion.correctOptions} */}
+                {opt.option} : {stripHtmlTags(opt.value)}
               </div>
             ))}
           </div>
         </div>
         <div className={style.action}>
+          {currentQuestionIndex > 0 && (
+            <button onClick={()=>handlePreviousQuestion()} className={style.previous} type="button">
+              Previous
+            </button>
+          )}
+
           <button
-            onClick={handlePreviousQuestion}
-            disabled={currentQuestionIndex === 0}
+            onClick={() => handleClearSession()}
             className={style.previous}
-            type="button"
           >
-            Previous
+            clear session
           </button>
-          {/* <button
-            onClick={handleClearSelection}
-            className={style.clear}
-            type="button"
-          >
-            Clear selection
-          </button> */}
-          {currentQuestionIndex < totalQuestions - 1 ? (
+          {currentQuestionIndex <= 8 &&  (
             <button
-              onClick={handleNextQuestion}
+              onClick={() => handleNextClick()}
               className={style.next}
               type="button"
             >
               Next
             </button>
-          ) : (
-            <button
-              onClick={handleNextQuestion}
-              className={style.next}
-              type="button"
-            >
-              Finish
-            </button>
-          )}
+          ) }
         </div>
       </div>
     </div>

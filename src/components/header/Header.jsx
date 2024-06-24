@@ -1,16 +1,45 @@
-
 import style from "./Header.module.scss";
-
-const Header = ({setSubject,subject}) => {
-
-
+import { useDispatch } from "react-redux";
+import { selectSubject, setSubjectName } from "../../features/Quiz";
+import { useSelector } from "react-redux";
+const Header = () => {
+  const dispatch = useDispatch();
+  const subject = useSelector((state) => state.quiz.subject);
+  const handleSubjectClick = (subjectIndex, subjectName) => {
+    dispatch(selectSubject(subjectIndex));
+    dispatch(setSubjectName(subjectName));
+  };
   return (
     <div className={style.container}>
       <div className={style.items}>
-        <button onClick={()=>setSubject(0)} style={{backgroundColor:subject===0?'#627ee3':null,color:subject===0? 'white':null}} type="button">SCIENCE</button>
-        <button onClick={()=>setSubject(1)} style={{backgroundColor:subject===1?'#627ee3':null,color:subject===1? 'white':null}} type="button">MATHEMATICS</button>
-        <button onClick={()=>setSubject(2)} style={{backgroundColor:subject===2?'#627ee3':null,color:subject===2? 'white':null}} type="button">SOCIAL SCIENCE</button>
-        <button onClick={()=>setSubject(3)} style={{backgroundColor:subject===3?'#627ee3':null,color:subject===3? 'white':null}} type="button">MENTAL ABILITY</button>
+        <button
+          onClick={() => handleSubjectClick(0, "SCIENCE")}
+          type="button"
+          style={{ backgroundColor: subject === 0 ? "#627ee3" : null }}
+        >
+          SCIENCE
+        </button>
+        <button
+          onClick={() => handleSubjectClick(1, "MATHEMATICS")}
+          type="button"
+          style={{ backgroundColor: subject === 1 ? "#627ee3" : null }}
+        >
+          MATHEMATICS
+        </button>
+        <button
+          onClick={() => handleSubjectClick(2, "SOCIAL SCIENCE")}
+          type="button"
+          style={{ backgroundColor: subject === 2 ? "#627ee3" : null }}
+        >
+          SOCIAL SCIENCE
+        </button>
+        <button
+          onClick={() => handleSubjectClick(3, "MENTAL ABILITY")}
+          type="button"
+          style={{ backgroundColor: subject === 3 ? "#627ee3" : null }}
+        >
+          MENTAL ABILITY
+        </button>
       </div>
     </div>
   );

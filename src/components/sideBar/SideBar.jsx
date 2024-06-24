@@ -1,41 +1,26 @@
-import { useEffect, useState } from "react";
 import style from "./SideBar.module.scss";
 import Timer from "../counter/Timer";
 import { Link } from "react-router-dom";
+import { useSelector,useDispatch } from "react-redux";
+import { setMark } from "../../features/Quiz";
 
-const SideBar = ({ totalQuestions, selections,score,setScore }) => {
+const SideBar = () => {
   // const [score, setScore] = useState(0);
-  const getStatus = (index) => {
-    const selection = selections.find(
-      (sel) => sel.questionNumber === index + 1 && sel.selectedOption
+  const dispatch=useDispatch()
+  const subjectName=useSelector(state=>state.quiz.subJectName)
+  const questionLength = useSelector((state) => state.quiz.questionLength);
+  const answer = useSelector((state) => state.quiz.answers);
+  const mark=useSelector(state=>state.quiz.mark)
+  console.log("s is", answer);
+  const answerStatus = (index) => {
+    const answered = answer.find(
+      (ans) => ans.questionNumber === index && ans.selectedOption
     );
-    if (selection) {
+    if (answered) {
       return "answered";
     }
     return "unattended";
   };
-  const answeredCount = selections.filter(
-    (sel) => sel.selectedOption !== false
-  ).length;
-  const unansweredCount = totalQuestions - answeredCount;
-
-  useEffect(() => {
-    const calculateScore = () => {
-      let totalScore = 0;
-
-      selections.forEach((sel) => {
-        if (sel.selectedOption !== false) {
-          const isCorrect = sel.selectedOption === sel.correctAns[0]; // Assuming correctAns is an array
-          totalScore += isCorrect ? 4 : -1; // Adjust score logic based on your requirements
-        }
-      });
-
-      setScore(totalScore);
-    };
-
-    calculateScore();
-  }, [selections,setScore]);
-
   return (
     <div className={style.container}>
       <div className={style.box}>
@@ -46,54 +31,49 @@ const SideBar = ({ totalQuestions, selections,score,setScore }) => {
         </div>
         <div className={style.view}>
           <p>
-            You are viewing <span></span> section
+            You are viewing <span>{subjectName}</span> section
           </p>
         </div>
         <div className={style.action}>
           <p>Legends</p>
           <div className={style.marks}>
             <div className={style.item}>
-              <div className={style.squire}>{unansweredCount}</div>
-              <h4>Un-attended</h4>
+              <div className={style.squire}></div>
+              <h4>Un-attended {questionLength - answer.length}</h4>
             </div>
             <div className={style.item}>
-              <div style={{ backgroundColor: "red" }} className={style.squire}>
-                {unansweredCount}
-              </div>
-              <h4>Un-Answered </h4>
+              <div
+                style={{ backgroundColor: "red" }}
+                className={style.squire}
+              ></div>
+              <h4>Un-Answered {questionLength - answer.length}</h4>
             </div>
             <div className={style.item}>
               <div
                 style={{ backgroundColor: "lightGreen" }}
                 className={style.squire}
-              >
-                {answeredCount}
-              </div>
-              <h4>Answered </h4>
+              ></div>
+              <h4>Answered {answer.length}</h4>
             </div>
           </div>
         </div>
         <div className={style.answer}>
-          {[...Array(totalQuestions)].map((_, index) => (
+          {Array.from({ length: questionLength }).map((_, index) => (
             <div
-              key={index}
               style={{
-                backgroundColor: getStatus(index) === "answered" ? "red" : null,
+                backgroundColor:
+                  answerStatus(index) === "answered" ? "lightGreen" : null,
               }}
+              key={index}
               className={style.answerBox}
-            >
-              {index + 1}
-            </div>
+            >{index+1}</div>
           ))}
         </div>
-        <Link to={`/${score}`}>
-        <div className={style.finish}>
-          <button>Finish</button>
-          {/* <p>{score}</p> */}
-          {/* <Evaluator selections={selections} /> */}
-        </div>
+        <Link to={`/${mark}`}>
+          <div className={style.finish}>
+            <button onClick={()=>dispatch(setMark())}>Finish</button>
+          </div>
         </Link>
-       
       </div>
     </div>
   );
